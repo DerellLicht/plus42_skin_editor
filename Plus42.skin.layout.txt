@@ -14,15 +14,16 @@ Display: describes the location, size, and color of the display; arguments
 Key: describes a clickable key; arguments are: 
   keycode, 
   sensitive rectangle (i.e. the rectangle where mouse-down events 
-  will cause the key to be pressed), 
+     will cause the key to be pressed), 
   display rectangle (i.e. the rectangle that changes when a key is
-  pressed or released), and the 
+     pressed or released), and the 
   location of the top-left corner of the active-state bitmap 
-  (since the active-state bitmap must have the same size as the display rectangle, 
-  only its position, not its width and height, are specified).
-  Keycodes in the range 1..37 correspond to actual calculator keys; keycodes
-  38..255 can be used to define "macro" keys. For each such keycode, there must
-  be a corresponding "Macro:" line in the layout file.
+     (since the active-state bitmap must have the same size as the display rectangle, 
+     only its position, not its width and height, are specified).
+     
+  Keycodes in the range 1..37 correspond to actual calculator keys; 
+  keycodes 38..255 can be used to define "macro" keys. 
+  For each such keycode, there must be a corresponding "Macro:" line in the layout file.
   You may specify two keycodes (two numbers separated by a comma); if you do,
   the first is used when the calculator's shift (indicated by the shift
   annunciator) is inactive, and the second is used when the calculator's shift

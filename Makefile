@@ -27,7 +27,7 @@ CFLAGS += -DUNICODE -D_UNICODE
 LFLAGS += -dUNICODE -d_UNICODE 
 endif
 
-LIBS=-lmpr -lshlwapi -lole32 -luuid
+#LIBS=-lmpr -lshlwapi -lole32 -luuid
 
 #***************************************************************
 #  After upgrading from g++ 4.3.3 to g++ 4.4.1,
