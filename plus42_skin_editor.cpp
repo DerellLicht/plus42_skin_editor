@@ -29,6 +29,8 @@ static uint ref_width = 0 ;
 static uint ref_height = 0 ;         
 static uint target_width = 0 ;         
 static uint target_height = 0 ;         
+static double x_scale = 0.0 ;
+static double y_scale = 0.0 ;
          
 //********************************************************************************
 static void usage(void)
@@ -130,6 +132,9 @@ int _tmain(int argc, TCHAR** argv)
    
    printf("ref dimens:    %ux%u\n", ref_width, ref_height) ;
    printf("target dimens: %ux%u\n", target_width, target_height);
+   x_scale = (double) target_width  / (double) ref_width ;
+   y_scale = (double) target_height / (double) ref_height ;
+   printf("scaling factors: X: %.5f, Y: %.5f\n", x_scale, y_scale) ;
    
 
    return 0;
