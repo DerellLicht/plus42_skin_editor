@@ -3,6 +3,9 @@
 //  License: Creative Commons CC0 1.0 Universal
 //  Written by: Derell Licht
 //  
+//  build: g++ -Wall -s -O3 -c -Weffc++ plus42_skin_editor.cpp -o plus42_skin_editor.exe
+//  If we want to build with gdiplus (GDI+) library, then we need:
+//  build: c:\tdm32\bin\g++ -Wall -s -O3 -c -Weffc++ -Wno-stringop-truncation plus42_skin_editor.cpp -o plus42_skin_editor.exe
 //  run example: plus42_skin_editor LandscapeRightSmall LandscapeRight
 //********************************************************************************
 //  The initial version of this editor will assume that the target file
@@ -23,7 +26,7 @@ typedef unsigned int  uint ;
 #define  HTAB     9
 //lint -e10  Expecting '}'
 //lint -esym(818, argv)  //Pointer parameter could be declared as pointing to const
-
+//lint -esym(438, outlen)  // Last value assigned to variable not used
 
 static TCHAR target_file[MAX_PATH_LEN+1] = _T("") ;
 static TCHAR target_file_lo[MAX_PATH_LEN+10+1] = _T("") ;
@@ -197,6 +200,8 @@ static int get_skin_dimens(TCHAR *skin_file, bool isRefFile)
 }
 
 //********************************************************************************
+//  these two functions should use round(), rather than ceil()
+//********************************************************************************
 static uint scale_x(uint xnum)
 {
    double xvalue = (double) xnum * x_scale ;
@@ -212,8 +217,147 @@ static uint scale_y(uint ynum)
 }
 
 //********************************************************************************
+//Display: 58,120 4 6 9EA48D 242A26
+//********************************************************************************
+static int scale_display(TCHAR *inpstr, FILE *outfd)
+{
+   static bool entry_shown = false ;
+   TCHAR outstr[MAX_LINE_LEN+1] ;
+   uint outlen ;
+   uint xnum, ynum ;
+   TCHAR *hd ;
+   hd = &inpstr[8] ;
+   hd = skip_spaces_and_commas(hd);
+   
+   xnum = (uint) atoi(hd) ;
+   xnum = scale_x(xnum) ;
+   
+   hd = _tcschr(hd, ',');
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   hd++ ;
+   ynum = (uint) atoi(hd) ;
+   ynum = scale_y(ynum) ;
+   
+   //  build first part of outstr
+   sprintf(outstr, "Display: %u,%u ", xnum, ynum);
+   outlen = _tcslen(outstr);  //  used for appending later data
+   // printf("D1: [%s] %u\n", outstr, outlen);
+   
+   //  go to magnification fields
+   hd = next_field(hd);
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   
+   xnum = (uint) atoi(hd) ;
+   xnum = scale_x(xnum) ;
+   
+   
+   // hd = _tcschr(hd, ',');
+   hd = next_field(hd);
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   ynum = (uint) atoi(hd) ;
+   ynum = scale_y(ynum) ;
+   
+   hd = next_field(hd);
+   sprintf(outstr+outlen, "%u %u %s", xnum, ynum, hd);
+   outlen = _tcslen(outstr);  //lint !e438
+   
+   // printf("D2: [%s] %u, hd: [%s]\n", outstr, outlen, hd);
+   // fputs(inpstr, outfd);
+   fprintf(outfd, "%s%s\n", outstr, hd);
+   if (!entry_shown) {
+      printf("Display in:  [%s]\n", inpstr);
+      printf("Display out: [%s]\n", outstr);
+      entry_shown = true ;
+   }
+   return 0 ;
+}
+
+//********************************************************************************
+//Annunciator: 1 60,90,30,26 1330,94
+//********************************************************************************
+static int scale_annunciator(TCHAR *inpstr, FILE *outfd)
+{
+   static bool entry_shown = false ;
+   TCHAR outstr[MAX_LINE_LEN+1] ;
+   uint outlen ;
+   uint xnum, ynum ;
+   TCHAR *hd ;
+   // puts("found Annunciator");
+   hd = next_field(inpstr);
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   hd = next_field(hd);
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   outlen = (uint) hd - (uint) inpstr ;
+   _tcsncpy(outstr, inpstr, outlen);   //  copy intro data to output
+   
+   //  get x0, y0
+   xnum = (uint) atoi(hd) ;
+   xnum = scale_x(xnum) ;
+   
+   hd = _tcschr(hd, ',');
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   hd = skip_spaces_and_commas(hd);
+   // hd++ ;
+   ynum = (uint) atoi(hd) ;
+   ynum = scale_y(ynum) ;
+   
+   sprintf(outstr+outlen, "%u,%u,", xnum, ynum);
+   outlen = _tcslen(outstr);  //  used for appending later data
+   hd = _tcschr(hd, ',');
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   hd = skip_spaces_and_commas(hd);
+   // hd++ ;
+   
+   //  get dx, dy
+   xnum = (uint) atoi(hd) ;
+   xnum = scale_x(xnum) ;
+   
+   hd = _tcschr(hd, ',');
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   hd = skip_spaces_and_commas(hd);
+   // hd++ ;
+   ynum = (uint) atoi(hd) ;
+   ynum = scale_y(ynum) ;
+   hd = next_field(hd) ;
+   sprintf(outstr+outlen, "%u,%u ", xnum, ynum);
+   outlen = _tcslen(outstr);  //  used for appending later data
+   
+   //  get x0, y0 for active-state bitmap
+   xnum = (uint) atoi(hd) ;
+   xnum = scale_x(xnum) ;
+   
+   hd = _tcschr(hd, ',');
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   hd = skip_spaces_and_commas(hd);
+   // hd++ ;
+   ynum = (uint) atoi(hd) ;
+   ynum = scale_y(ynum) ;
+   sprintf(outstr+outlen, "%u,%u", xnum, ynum);
+   outlen = _tcslen(outstr);  //lint !e438
+   
+   if (!entry_shown) {
+      printf("Annun: in:  [%s]\n", inpstr);
+      printf("Annun: out: [%s]\n", outstr);
+      entry_shown = true ;
+   }
+   fprintf(outfd, "%s\n", outstr);
+   return 0 ;
+}
+
+//********************************************************************************
+//Key: 2 117,450,102,106 127,478,82,58 1389,478
+//********************************************************************************
+static int scale_key(TCHAR *inpstr, FILE *outfd)
+{
+   // puts("found Key");
+   // fprintf(outfd, "%s\n", inpstr);
+   return 0 ;
+}
+
+//********************************************************************************
 static int scale_layout_values(TCHAR *dest_file, TCHAR *source_file)
 {
+   int result ;
    FILE *infd = fopen(source_file, "rt");
    if (infd == NULL) {
       printf("%s: cannot open for reading\n", source_file);
@@ -226,10 +370,10 @@ static int scale_layout_values(TCHAR *dest_file, TCHAR *source_file)
    }
    
    TCHAR inpstr[MAX_LINE_LEN+1] ;
-   TCHAR *hd ;
-   TCHAR outstr[MAX_LINE_LEN+1] ;
-   uint outlen = 0 ;
-   uint xnum, ynum ;
+   // TCHAR *hd ;
+   // TCHAR outstr[MAX_LINE_LEN+1] ;
+   // uint outlen = 0 ;
+   // uint xnum, ynum ;
 //Skin: 0,0,1280,656
    while (fgets(inpstr, MAX_LINE_LEN, infd) != NULL) {
       strip_newlines(inpstr);
@@ -237,58 +381,28 @@ static int scale_layout_values(TCHAR *dest_file, TCHAR *source_file)
       //*******************************************************************
       //Display: 58,120 4 6 9EA48D 242A26
       if (_tcsncmp(inpstr, "Display:", 8) == 0) {
-         hd = &inpstr[8] ;
-         hd = skip_spaces_and_commas(hd);
-         
-         xnum = (uint) atoi(hd) ;
-         xnum = scale_x(xnum) ;
-         
-         hd = _tcschr(hd, ',');
-         if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
-         hd++ ;
-         ynum = (uint) atoi(hd) ;
-         ynum = scale_y(ynum) ;
-         
-         //  build first part of outstr
-         sprintf(outstr, "Display: %u,%u ", xnum, ynum);
-         outlen = _tcslen(outstr);  //  used for appending later data
-         // printf("D1: [%s] %u\n", outstr, outlen);
-         
-         //  go to magnification fields
-         hd = next_field(hd);
-         if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
-         
-         xnum = (uint) atoi(hd) ;
-         xnum = scale_x(xnum) ;
-         
-         
-         // hd = _tcschr(hd, ',');
-         hd = next_field(hd);
-         if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
-         ynum = (uint) atoi(hd) ;
-         ynum = scale_y(ynum) ;
-         
-         sprintf(outstr+outlen, "%u %u ", xnum, ynum);
-         outlen = _tcslen(outstr);  //  used for appending later data
-         
-         hd = next_field(hd);
-         // printf("D2: [%s] %u, hd: [%s]\n", outstr, outlen, hd);
-         // fputs(inpstr, outfd);
-         fprintf(outfd, "%s%s\n", outstr, hd);
+         result = scale_display(inpstr, outfd);
+         if (result != 0) {
+            break ;
+         }
       }
 
       //*******************************************************************
       //Annunciator: 1 60,90,30,26 1330,94
       else if (_tcsncmp(inpstr, "Annunciator:", 12) == 0) {
-         puts("found Annunciator");
-         fprintf(outfd, "%s\n", inpstr);
+         result = scale_annunciator(inpstr, outfd);
+         if (result != 0) {
+            break ;
+         }
       }
 
       //*******************************************************************
       //Key: 2 117,450,102,106 127,478,82,58 1389,478
       else if (_tcsncmp(inpstr, "Key:", 4) == 0) {
-         puts("found Key");
-         fprintf(outfd, "%s\n", inpstr);
+         result = scale_key(inpstr, outfd);
+         if (result != 0) {
+            break ;
+         }
       }
 
       //*******************************************************************
@@ -371,7 +485,7 @@ int _tmain(int argc, TCHAR** argv)
    
    //  back up the layout file
    sprintf(target_lo_backup, _T("%s.bak"), target_file_lo);
-   printf("rename [%s] to [%s]\n", target_file_lo, target_lo_backup);
+   _unlink(target_lo_backup); //lint !e534
    result = CopyFile(target_file_lo, target_lo_backup, TRUE);
    if (result == 0) {
       printf("rename: %s\n", get_system_message());
