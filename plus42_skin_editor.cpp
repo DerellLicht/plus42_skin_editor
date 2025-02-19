@@ -13,12 +13,14 @@
 #include <stdio.h>
 #include <stdlib.h>  //  atoi
 #include <tchar.h>
+#include <math.h>
 
 // #include "header.h"
 #define  MAX_PATH_LEN   1024
 
 typedef unsigned int  uint ;
 
+#define  HTAB     9
 //lint -e10  Expecting '}'
 //lint -esym(818, argv)  //Pointer parameter could be declared as pointing to const
 
@@ -44,6 +46,15 @@ static void usage(void)
 }
 
 //**********************************************************************
+TCHAR *skip_spaces_and_commas(TCHAR *hd)
+{
+   while (*hd == ' '  ||  *hd == ',') {
+      hd++ ;
+   }
+   return hd ;
+}
+
+//**********************************************************************
 //lint -esym(714, strip_newlines)
 //lint -esym(759, strip_newlines)
 //lint -esym(765, strip_newlines)
@@ -60,6 +71,19 @@ void strip_newlines(char *rstr)
          break;
       }
    }
+}
+
+//**********************************************************************
+//lint -esym(714, next_field)
+//lint -esym(759, next_field)
+//lint -esym(765, next_field)
+char *next_field(char *q)
+{
+   while (*q != ' '  &&  *q != HTAB  &&  *q != 0)
+      q++ ; //  walk past non-spaces
+   while (*q == ' '  ||  *q == HTAB)
+      q++ ; //  walk past all spaces
+   return q;
 }
 
 //*************************************************************
@@ -173,6 +197,21 @@ static int get_skin_dimens(TCHAR *skin_file, bool isRefFile)
 }
 
 //********************************************************************************
+static uint scale_x(uint xnum)
+{
+   double xvalue = (double) xnum * x_scale ;
+   xvalue = ceil(xvalue);
+   return (uint) xvalue ;
+}
+
+static uint scale_y(uint ynum)
+{
+   double yvalue = (double) ynum * y_scale ;
+   yvalue = ceil(yvalue);
+   return (uint) yvalue ;
+}
+
+//********************************************************************************
 static int scale_layout_values(TCHAR *dest_file, TCHAR *source_file)
 {
    FILE *infd = fopen(source_file, "rt");
@@ -187,31 +226,80 @@ static int scale_layout_values(TCHAR *dest_file, TCHAR *source_file)
    }
    
    TCHAR inpstr[MAX_LINE_LEN+1] ;
+   TCHAR *hd ;
+   TCHAR outstr[MAX_LINE_LEN+1] ;
+   uint outlen = 0 ;
+   uint xnum, ynum ;
 //Skin: 0,0,1280,656
    while (fgets(inpstr, MAX_LINE_LEN, infd) != NULL) {
       strip_newlines(inpstr);
-//Display: 58,120 4 6 9EA48D 242A26
+      
+      //*******************************************************************
+      //Display: 58,120 4 6 9EA48D 242A26
       if (_tcsncmp(inpstr, "Display:", 8) == 0) {
-         puts("found Display");
+         hd = &inpstr[8] ;
+         hd = skip_spaces_and_commas(hd);
+         
+         xnum = (uint) atoi(hd) ;
+         xnum = scale_x(xnum) ;
+         
+         hd = _tcschr(hd, ',');
+         if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+         hd++ ;
+         ynum = (uint) atoi(hd) ;
+         ynum = scale_y(ynum) ;
+         
+         //  build first part of outstr
+         sprintf(outstr, "Display: %u,%u ", xnum, ynum);
+         outlen = _tcslen(outstr);  //  used for appending later data
+         // printf("D1: [%s] %u\n", outstr, outlen);
+         
+         //  go to magnification fields
+         hd = next_field(hd);
+         if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+         
+         xnum = (uint) atoi(hd) ;
+         xnum = scale_x(xnum) ;
+         
+         
+         // hd = _tcschr(hd, ',');
+         hd = next_field(hd);
+         if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+         ynum = (uint) atoi(hd) ;
+         ynum = scale_y(ynum) ;
+         
+         sprintf(outstr+outlen, "%u %u ", xnum, ynum);
+         outlen = _tcslen(outstr);  //  used for appending later data
+         
+         hd = next_field(hd);
+         // printf("D2: [%s] %u, hd: [%s]\n", outstr, outlen, hd);
          // fputs(inpstr, outfd);
-         fprintf(outfd, "%s\n", inpstr);
+         fprintf(outfd, "%s%s\n", outstr, hd);
       }
-//Annunciator: 1 60,90,30,26 1330,94
+
+      //*******************************************************************
+      //Annunciator: 1 60,90,30,26 1330,94
       else if (_tcsncmp(inpstr, "Annunciator:", 12) == 0) {
          puts("found Annunciator");
          fprintf(outfd, "%s\n", inpstr);
       }
-//Key: 2 117,450,102,106 127,478,82,58 1389,478
+
+      //*******************************************************************
+      //Key: 2 117,450,102,106 127,478,82,58 1389,478
       else if (_tcsncmp(inpstr, "Key:", 4) == 0) {
          puts("found Key");
          fprintf(outfd, "%s\n", inpstr);
       }
-//AltBkgd: 1 1294,2,192,84 864,196
+
+      //*******************************************************************
+      //AltBkgd: 1 1294,2,192,84 864,196
       else if (_tcsncmp(inpstr, "AltBkgd:", 8) == 0) {
          puts("found AltBkgd");
          fprintf(outfd, "%s\n", inpstr);
       }
-//AltKey: 1 14 1298,386
+
+      //*******************************************************************
+      //AltKey: 1 14 1298,386
       else if (_tcsncmp(inpstr, "AltKey:", 7) == 0) {
          puts("found AltKey");
          fprintf(outfd, "%s\n", inpstr);
