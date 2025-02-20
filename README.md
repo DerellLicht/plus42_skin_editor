@@ -11,6 +11,7 @@ Steps for using the program are:
    It is recommended to make width field an even number, to avoid ambiguous results.
 
 3. Update Size field in the .layout file:  
+
 3a. Copy the Size field, and comment out the original Size field  
 
 3b. update new Size: field to reflect the new image size.
