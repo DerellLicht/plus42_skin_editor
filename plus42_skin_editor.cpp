@@ -629,11 +629,6 @@ static int scale_layout_values(TCHAR *dest_file, TCHAR *source_file)
    }
    
    TCHAR inpstr[MAX_LINE_LEN+1] ;
-   // TCHAR *hd ;
-   // TCHAR outstr[MAX_LINE_LEN+1] ;
-   // uint outlen = 0 ;
-   // uint xnum, ynum ;
-//Skin: 0,0,1280,656
    while (fgets(inpstr, MAX_LINE_LEN, infd) != NULL) {
       strip_newlines(inpstr);
       
@@ -725,6 +720,7 @@ int _tmain(int argc, TCHAR** argv)
    
    //  back up the layout file
    sprintf(target_lo_backup, _T("%s.bak"), target_file_lo);
+   printf("Creating backup: %s\n", target_lo_backup);
    _unlink(target_lo_backup); //lint !e534
    result = CopyFile(target_file_lo, target_lo_backup, TRUE);
    if (result == 0) {
