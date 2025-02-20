@@ -246,8 +246,14 @@ static unsigned dround(double inval)
 enum scale_rule_e {
 SCALE_ROUND=0,
 SCALE_CEIL,
-SCALE_FLOOR   
+SCALE_FLOOR
 } ;
+
+static double scale_xd(uint xnum)
+{
+   double xvalue = (double) xnum * x_scale ;
+   return xvalue ;
+}
 
 static uint scale_x(uint xnum, enum scale_rule_e scale_rule)
 {
@@ -314,7 +320,8 @@ static int scale_display(TCHAR *inpstr, FILE *outfd)
    
    xnum = (uint) atoi(hd) ;
    // xnum = scale_x(xnum, SCALE_ROUND) ;
-   xnum = scale_x(xnum, SCALE_FLOOR) ;
+   // xnum = scale_x(xnum, SCALE_FLOOR) ;
+   double xnumd = scale_xd(xnum) ;
    
    hd = next_field(hd);
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
@@ -322,7 +329,7 @@ static int scale_display(TCHAR *inpstr, FILE *outfd)
    ynum = scale_y(ynum, SCALE_ROUND) ;
    
    hd = next_field(hd);
-   sprintf(outstr+outlen, "%u %u %s", xnum, ynum, hd);
+   sprintf(outstr+outlen, "%.2f %u %s", xnumd, ynum, hd);
    outlen = _tcslen(outstr);  //lint !e438
    
    // printf("D2: [%s] %u, hd: [%s]\n", outstr, outlen, hd);
@@ -406,6 +413,7 @@ static int scale_annunciator(TCHAR *inpstr, FILE *outfd)
 
 //********************************************************************************
 //Key: 2 117,450,102,106 127,478,82,58 1389,478
+//  Anything tweaked in Key: must be tweaked the same in AltBkgd:
 //********************************************************************************
 static int scale_key(TCHAR *inpstr, FILE *outfd)
 {
@@ -509,6 +517,7 @@ static int scale_key(TCHAR *inpstr, FILE *outfd)
 
 //********************************************************************************
 //AltBkgd: 1 1294,2,192,84 864,196
+//  Anything tweaked in Key: must be tweaked the same in AltBkgd:
 //********************************************************************************
 static int scale_altbkgd(TCHAR *inpstr, FILE *outfd)
 {
