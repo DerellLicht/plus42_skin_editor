@@ -281,7 +281,6 @@ static int scale_display(TCHAR *inpstr, FILE *outfd)
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
-   // hd++ ;
    ynum = (uint) atoi(hd) ;
    ynum = scale_y(ynum) ;
    
@@ -340,7 +339,6 @@ static int scale_annunciator(TCHAR *inpstr, FILE *outfd)
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
-   // hd++ ;
    ynum = (uint) atoi(hd) ;
    ynum = scale_y(ynum) ;
    
@@ -349,7 +347,6 @@ static int scale_annunciator(TCHAR *inpstr, FILE *outfd)
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
-   // hd++ ;
    
    //  get dx, dy
    xnum = (uint) atoi(hd) ;
@@ -358,7 +355,6 @@ static int scale_annunciator(TCHAR *inpstr, FILE *outfd)
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
-   // hd++ ;
    ynum = (uint) atoi(hd) ;
    ynum = scale_y(ynum) ;
    hd = next_field(hd) ;
@@ -372,7 +368,6 @@ static int scale_annunciator(TCHAR *inpstr, FILE *outfd)
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
-   // hd++ ;
    ynum = (uint) atoi(hd) ;
    ynum = scale_y(ynum) ;
    sprintf(outstr+outlen, "%u,%u", xnum, ynum);
@@ -413,7 +408,6 @@ static int scale_key(TCHAR *inpstr, FILE *outfd)
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
-   // hd++ ;
    ynum = (uint) atoi(hd) ;
    ynum = scale_y(ynum) ;
    
@@ -431,7 +425,6 @@ static int scale_key(TCHAR *inpstr, FILE *outfd)
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
-   // hd++ ;
    ynum = (uint) atoi(hd) ;
    ynum = scale_y(ynum) ;
    hd = next_field(hd) ;
@@ -446,7 +439,6 @@ static int scale_key(TCHAR *inpstr, FILE *outfd)
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
-   // hd++ ;
    ynum = (uint) atoi(hd) ;
    ynum = scale_y(ynum) ;
    
@@ -464,7 +456,6 @@ static int scale_key(TCHAR *inpstr, FILE *outfd)
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
-   // hd++ ;
    ynum = (uint) atoi(hd) ;
    ynum = scale_y(ynum) ;
    hd = next_field(hd) ;
@@ -478,7 +469,6 @@ static int scale_key(TCHAR *inpstr, FILE *outfd)
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
-   // hd++ ;
    ynum = (uint) atoi(hd) ;
    ynum = scale_y(ynum) ;
    sprintf(outstr+outlen, "%u,%u", xnum, ynum);
@@ -523,7 +513,6 @@ static int scale_altbkgd(TCHAR *inpstr, FILE *outfd)
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR 3"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
-   // hd++ ;
    ynum = (uint) atoi(hd) ;
    ynum = scale_y(ynum) ;
    
@@ -532,7 +521,6 @@ static int scale_altbkgd(TCHAR *inpstr, FILE *outfd)
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR 4"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
-   // hd++ ;
    
    //  get dx, dy
    xnum = (uint) atoi(hd) ;
@@ -541,7 +529,6 @@ static int scale_altbkgd(TCHAR *inpstr, FILE *outfd)
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR 5"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
-   // hd++ ;
    ynum = (uint) atoi(hd) ;
    ynum = scale_y(ynum) ;
    hd = next_field(hd) ;
@@ -555,7 +542,6 @@ static int scale_altbkgd(TCHAR *inpstr, FILE *outfd)
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR 6"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
-   // hd++ ;
    ynum = (uint) atoi(hd) ;
    ynum = scale_y(ynum) ;
    sprintf(outstr+outlen, "%u,%u", xnum, ynum);
@@ -598,7 +584,6 @@ static int scale_altkey(TCHAR *inpstr, FILE *outfd)
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR 4"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
-   // hd++ ;
    ynum = (uint) atoi(hd) ;
    ynum = scale_y(ynum) ;
    sprintf(outstr+outlen, "%u,%u", xnum, ynum);
