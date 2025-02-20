@@ -243,20 +243,41 @@ static unsigned dround(double inval)
 //********************************************************************************
 //  these two functions should use round(), rather than ceil()
 //********************************************************************************
-static uint scale_x(uint xnum)
+enum scale_rule_e {
+SCALE_ROUND=0,
+SCALE_CEIL,
+SCALE_FLOOR   
+} ;
+
+static uint scale_x(uint xnum, enum scale_rule_e scale_rule)
 {
    double xvalue = (double) xnum * x_scale ;
-   // xvalue = ceil(xvalue);
-   // return (uint) xvalue ;
-   return dround(xvalue) ;
+   switch (scale_rule) {
+   case SCALE_CEIL:
+      return (uint) ceil(xvalue);
+   case SCALE_FLOOR:
+      return (uint) floor(xvalue);
+   case SCALE_ROUND: 
+   default:
+      return dround(xvalue) ;
+   }
 }
 
-static uint scale_y(uint ynum)
+static uint scale_y(uint ynum, enum scale_rule_e scale_rule)
 {
    double yvalue = (double) ynum * y_scale ;
    // yvalue = ceil(yvalue);
    // return (uint) yvalue ;
-   return dround(yvalue) ;
+   // return dround(yvalue) ;
+   switch (scale_rule) {
+   case SCALE_CEIL:
+      return (uint) ceil(yvalue);
+   case SCALE_FLOOR:
+      return (uint) floor(yvalue);
+   case SCALE_ROUND: 
+   default:
+      return dround(yvalue) ;
+   }
 }
 
 //********************************************************************************
@@ -276,13 +297,13 @@ static int scale_display(TCHAR *inpstr, FILE *outfd)
 
    //  get x0, y0
    xnum = (uint) atoi(hd) ;
-   xnum = scale_x(xnum) ;
+   xnum = scale_x(xnum, SCALE_ROUND) ;
    
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
    ynum = (uint) atoi(hd) ;
-   ynum = scale_y(ynum) ;
+   ynum = scale_y(ynum, SCALE_ROUND) ;
    
    sprintf(outstr+outlen, "%u,%u ", xnum, ynum);
    outlen = _tcslen(outstr);  //  used for appending later data
@@ -292,12 +313,13 @@ static int scale_display(TCHAR *inpstr, FILE *outfd)
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    
    xnum = (uint) atoi(hd) ;
-   xnum = scale_x(xnum) ;
+   // xnum = scale_x(xnum, SCALE_ROUND) ;
+   xnum = scale_x(xnum, SCALE_FLOOR) ;
    
    hd = next_field(hd);
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    ynum = (uint) atoi(hd) ;
-   ynum = scale_y(ynum) ;
+   ynum = scale_y(ynum, SCALE_ROUND) ;
    
    hd = next_field(hd);
    sprintf(outstr+outlen, "%u %u %s", xnum, ynum, hd);
@@ -334,13 +356,13 @@ static int scale_annunciator(TCHAR *inpstr, FILE *outfd)
    
    //  get x0, y0
    xnum = (uint) atoi(hd) ;
-   xnum = scale_x(xnum) ;
+   xnum = scale_x(xnum, SCALE_ROUND) ;
    
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
    ynum = (uint) atoi(hd) ;
-   ynum = scale_y(ynum) ;
+   ynum = scale_y(ynum, SCALE_ROUND) ;
    
    sprintf(outstr+outlen, "%u,%u,", xnum, ynum);
    outlen = _tcslen(outstr);  //  used for appending later data
@@ -350,26 +372,26 @@ static int scale_annunciator(TCHAR *inpstr, FILE *outfd)
    
    //  get dx, dy
    xnum = (uint) atoi(hd) ;
-   xnum = scale_x(xnum) ;
+   xnum = scale_x(xnum, SCALE_ROUND) ;
    
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
    ynum = (uint) atoi(hd) ;
-   ynum = scale_y(ynum) ;
+   ynum = scale_y(ynum, SCALE_ROUND) ;
    hd = next_field(hd) ;
    sprintf(outstr+outlen, "%u,%u ", xnum, ynum);
    outlen = _tcslen(outstr);  //  used for appending later data
    
    //  get x0, y0 for active-state bitmap
    xnum = (uint) atoi(hd) ;
-   xnum = scale_x(xnum) ;
+   xnum = scale_x(xnum, SCALE_ROUND) ;
    
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
    ynum = (uint) atoi(hd) ;
-   ynum = scale_y(ynum) ;
+   ynum = scale_y(ynum, SCALE_ROUND) ;
    sprintf(outstr+outlen, "%u,%u", xnum, ynum);
    outlen = _tcslen(outstr);  //lint !e438
    
@@ -403,13 +425,13 @@ static int scale_key(TCHAR *inpstr, FILE *outfd)
    //******************************************************************
    //  get x0, y0 (sensitive rectangle)
    xnum = (uint) atoi(hd) ;
-   xnum = scale_x(xnum) ;
+   xnum = scale_x(xnum, SCALE_ROUND) ;
    
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
    ynum = (uint) atoi(hd) ;
-   ynum = scale_y(ynum) ;
+   ynum = scale_y(ynum, SCALE_ROUND) ;
    
    sprintf(outstr+outlen, "%u,%u,", xnum, ynum);
    outlen = _tcslen(outstr);  //  used for appending later data
@@ -420,13 +442,13 @@ static int scale_key(TCHAR *inpstr, FILE *outfd)
    
    //  get dx, dy
    xnum = (uint) atoi(hd) ;
-   xnum = scale_x(xnum) ;
+   xnum = scale_x(xnum, SCALE_ROUND) ;
    
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
    ynum = (uint) atoi(hd) ;
-   ynum = scale_y(ynum) ;
+   ynum = scale_y(ynum, SCALE_ROUND) ;
    hd = next_field(hd) ;
    sprintf(outstr+outlen, "%u,%u ", xnum, ynum);
    outlen = _tcslen(outstr);  //  used for appending later data
@@ -434,13 +456,13 @@ static int scale_key(TCHAR *inpstr, FILE *outfd)
    //******************************************************************
    //  get x0, y0 (display rectangle)
    xnum = (uint) atoi(hd) ;
-   xnum = scale_x(xnum) ;
+   xnum = scale_x(xnum, SCALE_ROUND) ;
    
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
    ynum = (uint) atoi(hd) ;
-   ynum = scale_y(ynum) ;
+   ynum = scale_y(ynum, SCALE_ROUND) ;
    
    sprintf(outstr+outlen, "%u,%u,", xnum, ynum);
    outlen = _tcslen(outstr);  //  used for appending later data
@@ -451,26 +473,26 @@ static int scale_key(TCHAR *inpstr, FILE *outfd)
    
    //  get dx, dy
    xnum = (uint) atoi(hd) ;
-   xnum = scale_x(xnum) ;
+   xnum = scale_x(xnum, SCALE_ROUND) ;
    
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
    ynum = (uint) atoi(hd) ;
-   ynum = scale_y(ynum) ;
+   ynum = scale_y(ynum, SCALE_ROUND) ;
    hd = next_field(hd) ;
    sprintf(outstr+outlen, "%u,%u ", xnum, ynum);
    outlen = _tcslen(outstr);  //  used for appending later data
    
    //  get x0, y0 for active-state bitmap
    xnum = (uint) atoi(hd) ;
-   xnum = scale_x(xnum) ;
+   xnum = scale_x(xnum, SCALE_ROUND) ;
    
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
    ynum = (uint) atoi(hd) ;
-   ynum = scale_y(ynum) ;
+   ynum = scale_y(ynum, SCALE_ROUND) ;
    sprintf(outstr+outlen, "%u,%u", xnum, ynum);
    outlen = _tcslen(outstr);  //lint !e438
    
@@ -508,13 +530,13 @@ static int scale_altbkgd(TCHAR *inpstr, FILE *outfd)
    //******************************************************************
    //  get x0, y0 
    xnum = (uint) atoi(hd) ;
-   xnum = scale_x(xnum) ;
+   xnum = scale_x(xnum, SCALE_ROUND) ;
    
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR 3"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
    ynum = (uint) atoi(hd) ;
-   ynum = scale_y(ynum) ;
+   ynum = scale_y(ynum, SCALE_ROUND) ;
    
    sprintf(outstr+outlen, "%u,%u,", xnum, ynum);
    outlen = _tcslen(outstr);  //  used for appending later data
@@ -524,26 +546,26 @@ static int scale_altbkgd(TCHAR *inpstr, FILE *outfd)
    
    //  get dx, dy
    xnum = (uint) atoi(hd) ;
-   xnum = scale_x(xnum) ;
+   xnum = scale_x(xnum, SCALE_ROUND) ;
    
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR 5"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
    ynum = (uint) atoi(hd) ;
-   ynum = scale_y(ynum) ;
+   ynum = scale_y(ynum, SCALE_ROUND) ;
    hd = next_field(hd) ;
    sprintf(outstr+outlen, "%u,%u ", xnum, ynum);
    outlen = _tcslen(outstr);  //  used for appending later data
    
    //  get x0, y0 for active-state bitmap
    xnum = (uint) atoi(hd) ;
-   xnum = scale_x(xnum) ;
+   xnum = scale_x(xnum, SCALE_ROUND) ;
    
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR 6"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
    ynum = (uint) atoi(hd) ;
-   ynum = scale_y(ynum) ;
+   ynum = scale_y(ynum, SCALE_ROUND) ;
    sprintf(outstr+outlen, "%u,%u", xnum, ynum);
    outlen = _tcslen(outstr);  //lint !e438
    
@@ -579,13 +601,13 @@ static int scale_altkey(TCHAR *inpstr, FILE *outfd)
    
    //  get x0, y0 for active-state bitmap
    xnum = (uint) atoi(hd) ;
-   xnum = scale_x(xnum) ;
+   xnum = scale_x(xnum, SCALE_ROUND) ;
    
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR 4"); return 1 ; }
    hd = skip_spaces_and_commas(hd);
    ynum = (uint) atoi(hd) ;
-   ynum = scale_y(ynum) ;
+   ynum = scale_y(ynum, SCALE_ROUND) ;
    sprintf(outstr+outlen, "%u,%u", xnum, ynum);
    outlen = _tcslen(outstr);  //lint !e438
    
