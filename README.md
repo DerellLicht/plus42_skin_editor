@@ -12,7 +12,7 @@ Steps for using the program are:
 
 3. Update Size field in the .layout file:  
 
-3a. Copy the Size field, and comment out the original Size field  
+3a. Duplicate the Size field, and comment out the original Size field  
 
 3b. update new Size: field to reflect the new image size.  
    NOTE that the Size: Width field is half of the image size, since the GIF is two images wide.
