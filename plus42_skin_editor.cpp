@@ -226,22 +226,24 @@ static int scale_display(TCHAR *inpstr, FILE *outfd)
    uint outlen ;
    uint xnum, ynum ;
    TCHAR *hd ;
-   hd = &inpstr[8] ;
-   hd = skip_spaces_and_commas(hd);
-   
+   hd = next_field(inpstr);
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   outlen = (uint) hd - (uint) inpstr ;
+   _tcsncpy(outstr, inpstr, outlen);   //  copy intro data to output
+
+   //  get x0, y0
    xnum = (uint) atoi(hd) ;
    xnum = scale_x(xnum) ;
    
    hd = _tcschr(hd, ',');
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
-   hd++ ;
+   hd = skip_spaces_and_commas(hd);
+   // hd++ ;
    ynum = (uint) atoi(hd) ;
    ynum = scale_y(ynum) ;
    
-   //  build first part of outstr
-   sprintf(outstr, "Display: %u,%u ", xnum, ynum);
+   sprintf(outstr+outlen, "%u,%u ", xnum, ynum);
    outlen = _tcslen(outstr);  //  used for appending later data
-   // printf("D1: [%s] %u\n", outstr, outlen);
    
    //  go to magnification fields
    hd = next_field(hd);
@@ -250,8 +252,6 @@ static int scale_display(TCHAR *inpstr, FILE *outfd)
    xnum = (uint) atoi(hd) ;
    xnum = scale_x(xnum) ;
    
-   
-   // hd = _tcschr(hd, ',');
    hd = next_field(hd);
    if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
    ynum = (uint) atoi(hd) ;
@@ -263,12 +263,12 @@ static int scale_display(TCHAR *inpstr, FILE *outfd)
    
    // printf("D2: [%s] %u, hd: [%s]\n", outstr, outlen, hd);
    // fputs(inpstr, outfd);
-   fprintf(outfd, "%s%s\n", outstr, hd);
    if (!entry_shown) {
       printf("Display in:  [%s]\n", inpstr);
       printf("Display out: [%s]\n", outstr);
       entry_shown = true ;
    }
+   fprintf(outfd, "%s\n", outstr);
    return 0 ;
 }
 
@@ -349,8 +349,224 @@ static int scale_annunciator(TCHAR *inpstr, FILE *outfd)
 //********************************************************************************
 static int scale_key(TCHAR *inpstr, FILE *outfd)
 {
+   static bool entry_shown = false ;
+   TCHAR outstr[MAX_LINE_LEN+1] ;
+   uint outlen ;
+   uint xnum, ynum ;
+   TCHAR *hd ;
+   // puts("found Annunciator");
+   hd = next_field(inpstr);
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   hd = next_field(hd);
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   outlen = (uint) hd - (uint) inpstr ;
+   _tcsncpy(outstr, inpstr, outlen);   //  copy intro data to output
+   
+   //******************************************************************
+   //  get x0, y0 (sensitive rectangle)
+   xnum = (uint) atoi(hd) ;
+   xnum = scale_x(xnum) ;
+   
+   hd = _tcschr(hd, ',');
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   hd = skip_spaces_and_commas(hd);
+   // hd++ ;
+   ynum = (uint) atoi(hd) ;
+   ynum = scale_y(ynum) ;
+   
+   sprintf(outstr+outlen, "%u,%u,", xnum, ynum);
+   outlen = _tcslen(outstr);  //  used for appending later data
+   hd = _tcschr(hd, ',');
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   hd = skip_spaces_and_commas(hd);
+   // hd++ ;
+   
+   //  get dx, dy
+   xnum = (uint) atoi(hd) ;
+   xnum = scale_x(xnum) ;
+   
+   hd = _tcschr(hd, ',');
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   hd = skip_spaces_and_commas(hd);
+   // hd++ ;
+   ynum = (uint) atoi(hd) ;
+   ynum = scale_y(ynum) ;
+   hd = next_field(hd) ;
+   sprintf(outstr+outlen, "%u,%u ", xnum, ynum);
+   outlen = _tcslen(outstr);  //  used for appending later data
+   
+   //******************************************************************
+   //  get x0, y0 (display rectangle)
+   xnum = (uint) atoi(hd) ;
+   xnum = scale_x(xnum) ;
+   
+   hd = _tcschr(hd, ',');
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   hd = skip_spaces_and_commas(hd);
+   // hd++ ;
+   ynum = (uint) atoi(hd) ;
+   ynum = scale_y(ynum) ;
+   
+   sprintf(outstr+outlen, "%u,%u,", xnum, ynum);
+   outlen = _tcslen(outstr);  //  used for appending later data
+   hd = _tcschr(hd, ',');
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   hd = skip_spaces_and_commas(hd);
+   // hd++ ;
+   
+   //  get dx, dy
+   xnum = (uint) atoi(hd) ;
+   xnum = scale_x(xnum) ;
+   
+   hd = _tcschr(hd, ',');
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   hd = skip_spaces_and_commas(hd);
+   // hd++ ;
+   ynum = (uint) atoi(hd) ;
+   ynum = scale_y(ynum) ;
+   hd = next_field(hd) ;
+   sprintf(outstr+outlen, "%u,%u ", xnum, ynum);
+   outlen = _tcslen(outstr);  //  used for appending later data
+   
+   //  get x0, y0 for active-state bitmap
+   xnum = (uint) atoi(hd) ;
+   xnum = scale_x(xnum) ;
+   
+   hd = _tcschr(hd, ',');
+   if (hd == NULL) { puts("PARSE ERROR"); return 1 ; }
+   hd = skip_spaces_and_commas(hd);
+   // hd++ ;
+   ynum = (uint) atoi(hd) ;
+   ynum = scale_y(ynum) ;
+   sprintf(outstr+outlen, "%u,%u", xnum, ynum);
+   outlen = _tcslen(outstr);  //lint !e438
+   
    // puts("found Key");
    // fprintf(outfd, "%s\n", inpstr);
+   if (!entry_shown) {
+      printf("Key: in:  [%s]\n", inpstr);
+      printf("Key: out: [%s]\n", outstr);
+      entry_shown = true ;
+   }
+   fprintf(outfd, "%s\n", outstr);
+   return 0 ;
+}
+
+//********************************************************************************
+//AltBkgd: 1 1294,2,192,84 864,196
+//********************************************************************************
+static int scale_altbkgd(TCHAR *inpstr, FILE *outfd)
+{
+   // puts("found AltBkgd");
+   // fprintf(outfd, "%s\n", inpstr);
+   static bool entry_shown = false ;
+   TCHAR outstr[MAX_LINE_LEN+1] ;
+   uint outlen ;
+   uint xnum, ynum ;
+   TCHAR *hd ;
+   // puts("found Annunciator");
+   hd = next_field(inpstr);
+   if (hd == NULL) { puts("PARSE ERROR 1"); return 1 ; }
+   hd = next_field(hd);
+   if (hd == NULL) { puts("PARSE ERROR 2"); return 1 ; }
+   outlen = (uint) hd - (uint) inpstr ;
+   _tcsncpy(outstr, inpstr, outlen);   //  copy intro data to output
+   
+   //******************************************************************
+   //  get x0, y0 
+   xnum = (uint) atoi(hd) ;
+   xnum = scale_x(xnum) ;
+   
+   hd = _tcschr(hd, ',');
+   if (hd == NULL) { puts("PARSE ERROR 3"); return 1 ; }
+   hd = skip_spaces_and_commas(hd);
+   // hd++ ;
+   ynum = (uint) atoi(hd) ;
+   ynum = scale_y(ynum) ;
+   
+   sprintf(outstr+outlen, "%u,%u,", xnum, ynum);
+   outlen = _tcslen(outstr);  //  used for appending later data
+   hd = _tcschr(hd, ',');
+   if (hd == NULL) { puts("PARSE ERROR 4"); return 1 ; }
+   hd = skip_spaces_and_commas(hd);
+   // hd++ ;
+   
+   //  get dx, dy
+   xnum = (uint) atoi(hd) ;
+   xnum = scale_x(xnum) ;
+   
+   hd = _tcschr(hd, ',');
+   if (hd == NULL) { puts("PARSE ERROR 5"); return 1 ; }
+   hd = skip_spaces_and_commas(hd);
+   // hd++ ;
+   ynum = (uint) atoi(hd) ;
+   ynum = scale_y(ynum) ;
+   hd = next_field(hd) ;
+   sprintf(outstr+outlen, "%u,%u ", xnum, ynum);
+   outlen = _tcslen(outstr);  //  used for appending later data
+   
+   //  get x0, y0 for active-state bitmap
+   xnum = (uint) atoi(hd) ;
+   xnum = scale_x(xnum) ;
+   
+   hd = _tcschr(hd, ',');
+   if (hd == NULL) { puts("PARSE ERROR 6"); return 1 ; }
+   hd = skip_spaces_and_commas(hd);
+   // hd++ ;
+   ynum = (uint) atoi(hd) ;
+   ynum = scale_y(ynum) ;
+   sprintf(outstr+outlen, "%u,%u", xnum, ynum);
+   outlen = _tcslen(outstr);  //lint !e438
+   
+   if (!entry_shown) {
+      printf("altbg: in:  [%s]\n", inpstr);
+      printf("altbg: out: [%s]\n", outstr);
+      entry_shown = true ;
+   }
+   fprintf(outfd, "%s\n", outstr);
+   return 0 ;
+}
+
+//********************************************************************************
+//AltKey: 1 14 1298,386
+//********************************************************************************
+static int scale_altkey(TCHAR *inpstr, FILE *outfd)
+{
+   // puts("found AltKey");
+   static bool entry_shown = false ;
+   TCHAR outstr[MAX_LINE_LEN+1] ;
+   uint outlen ;
+   uint xnum, ynum ;
+   TCHAR *hd ;
+   // puts("found Annunciator");
+   hd = next_field(inpstr);
+   if (hd == NULL) { puts("PARSE ERROR 1"); return 1 ; }
+   hd = next_field(hd);
+   if (hd == NULL) { puts("PARSE ERROR 2"); return 1 ; }
+   hd = next_field(hd);
+   if (hd == NULL) { puts("PARSE ERROR 3"); return 1 ; }
+   outlen = (uint) hd - (uint) inpstr ;
+   _tcsncpy(outstr, inpstr, outlen);   //  copy intro data to output
+   
+   //  get x0, y0 for active-state bitmap
+   xnum = (uint) atoi(hd) ;
+   xnum = scale_x(xnum) ;
+   
+   hd = _tcschr(hd, ',');
+   if (hd == NULL) { puts("PARSE ERROR 4"); return 1 ; }
+   hd = skip_spaces_and_commas(hd);
+   // hd++ ;
+   ynum = (uint) atoi(hd) ;
+   ynum = scale_y(ynum) ;
+   sprintf(outstr+outlen, "%u,%u", xnum, ynum);
+   outlen = _tcslen(outstr);  //lint !e438
+   
+   if (!entry_shown) {
+      printf("altkey: in:  [%s]\n", inpstr);
+      printf("altkey: out: [%s]\n", outstr);
+      entry_shown = true ;
+   }
+   fprintf(outfd, "%s\n", outstr);
    return 0 ;
 }
 
@@ -408,15 +624,19 @@ static int scale_layout_values(TCHAR *dest_file, TCHAR *source_file)
       //*******************************************************************
       //AltBkgd: 1 1294,2,192,84 864,196
       else if (_tcsncmp(inpstr, "AltBkgd:", 8) == 0) {
-         puts("found AltBkgd");
-         fprintf(outfd, "%s\n", inpstr);
+         result = scale_altbkgd(inpstr, outfd);
+         if (result != 0) {
+            break ;
+         }
       }
 
       //*******************************************************************
       //AltKey: 1 14 1298,386
       else if (_tcsncmp(inpstr, "AltKey:", 7) == 0) {
-         puts("found AltKey");
-         fprintf(outfd, "%s\n", inpstr);
+         result = scale_altkey(inpstr, outfd);
+         if (result != 0) {
+            break ;
+         }
       }
       else {
          fprintf(outfd, "%s\n", inpstr);
