@@ -7,10 +7,14 @@ description, with the 'layout' extension replaced by 'gif'.)
 (Note: rectangles are given as "x,y,width,height"; points are "x,y".)
 
 Skin: the portion of the skin bitmap to be rendered as the actual faceplate
-Display: describes the location, size, and color of the display; arguments
-  are: top-left corner, x magnification, y magnification, background color,
-  foreground color. Colors are specified as 6-digit hex numbers in RRGGBB
-  format.
+
+Display: describes the location, size, and color of the display; arguments are: 
+  top-left corner, 
+  x magnification, y magnification, 
+  background color,
+  foreground color. 
+  Colors are specified as 6-digit hex numbers in RRGGBB format.
+  
 Key: describes a clickable key; arguments are: 
   keycode, 
   sensitive rectangle (i.e. the rectangle where mouse-down events 
@@ -29,6 +33,7 @@ Key: describes a clickable key; arguments are:
   annunciator) is inactive, and the second is used when the calculator's shift
   is active. This feature allows you to have a key's shifted function be
   something different than it is on the original HP-42S keyboard.
+  
 Macro: for keys with keycodes in the range 38..255, this defines the sequence
   of HP-42S keys (keycodes 1..37) that is to be pressed; arguments are:
   keycode, followed by zero or more keycodes in the range 1..37.
@@ -42,6 +47,7 @@ Macro: for keys with keycodes in the range 38..255, this defines the sequence
   If the alternate is "" or '', the key is inactive in ALPHA mode, and pressing
   it will only cause an error beep.
   See below for examples of all types of macros.
+  
 Annunciator: describes an HP-42S annunciator; arguments are: code (1=updown,
   2=shift, 3=print, 4=run, 5=battery, 6=g, 7=rad), display rectangle, and the
   location of the top-left corner of the active-state bitmap.
@@ -63,7 +69,7 @@ DisplayExpansionZone: first_y last_y
   graphical elements that should not be replicated.
 DisplaySize: cols,rows disp_y pixel_scale_y max_rows
   If the skin was designed for a display size other than 2 rows by 22 columns,
-  use this hint to specify the default size. The number or rows must be at
+  use this hint to specify the default size. The number of rows must be at
   least 2 and the number of columns must be at least 22.
   Disp_y and pixel_scale_y specify top of the display and the the vertical
   pixel size to be used, instead of the ones specified in the Display: line, if

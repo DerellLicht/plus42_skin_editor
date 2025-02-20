@@ -13,7 +13,7 @@ ifeq ($(USE_DEBUG),YES)
 CFLAGS = -Wall -g -c
 LFLAGS = -g
 else
-CFLAGS = -Wall -s -O3 -c
+CFLAGS = -Wall -O3 -c
 LFLAGS = -s -O3
 endif
 

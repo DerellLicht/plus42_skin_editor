@@ -712,11 +712,6 @@ int _tmain(int argc, TCHAR** argv)
    printf("target layout file: %s\n", target_file_lo);
    printf("target gif file:    %s\n", target_file_gif);
    
-   //  get original dimensions from the reference file
-   // result = get_skin_dimens(ref_file_lo, true);
-   // if (result != 0) {
-   //    return result ;
-   // }
    result = get_skin_dimens(target_file_lo);
    if (result != 0) {
       return result ;
@@ -727,11 +722,6 @@ int _tmain(int argc, TCHAR** argv)
    x_scale = (double) target_width  / (double) ref_width ;
    y_scale = (double) target_height / (double) ref_height ;
    printf("scaling factors: X: %.5f, Y: %.5f\n", x_scale, y_scale) ;
-   
-   //  draw image of selected skin
-   //  Later note: I've decided to skip the graphics rendering for now...
-   //  it is *so much* more work than any of the other tasks that I need to do in this program...
-   // draw_gif_file(target_file_gif);
    
    //  back up the layout file
    sprintf(target_lo_backup, _T("%s.bak"), target_file_lo);
