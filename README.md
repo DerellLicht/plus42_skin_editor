@@ -1,7 +1,8 @@
 An editor to modify/resize Free42/Plus42 skins 
 
 This editor for Plus42 calculator skins, is primarily designed for resizing 
-existing skins.  Steps for using the program are:
+existing skins.  
+Steps for using the program are:
 
 1. copy an existing Plus42 skin, both the name.layout and name.gif files,
    to a new filename.
