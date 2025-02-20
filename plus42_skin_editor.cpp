@@ -31,8 +31,6 @@ typedef unsigned int  uint ;
 static TCHAR target_file[MAX_PATH_LEN+1] = _T("") ;
 static TCHAR target_file_lo[MAX_PATH_LEN+10+1] = _T("") ;
 static TCHAR target_file_gif[MAX_PATH_LEN+10+1] = _T("") ;
-static TCHAR ref_file[MAX_PATH_LEN+1] = _T("") ;
-static TCHAR ref_file_lo[MAX_PATH_LEN+10+1] = _T("") ;
 static TCHAR target_lo_backup[MAX_PATH_LEN+14+1] = _T("") ;
 
 static uint ref_width = 0 ;         
@@ -45,7 +43,7 @@ static double y_scale = 0.0 ;
 //********************************************************************************
 static void usage(void)
 {
-   puts("Usage: plus42_skin_editor <target_file_name> <ref_file_name>");
+   puts("Usage: plus42_skin_editor <target_layout_file_name>");
 }
 
 //**********************************************************************
@@ -152,7 +150,7 @@ char *get_system_message(void)
 }
 
 //********************************************************************************
-static int get_skin_dimens(TCHAR *skin_file, bool isRefFile)
+static int get_skin_dimens(TCHAR *skin_file)
 {
    FILE *fd = fopen(skin_file, "rt");
    if (fd == NULL) {
@@ -161,7 +159,9 @@ static int get_skin_dimens(TCHAR *skin_file, bool isRefFile)
    }
 #define  MAX_LINE_LEN   80   
    TCHAR inpstr[MAX_LINE_LEN+1] ;
-//Skin: 0,0,1280,656
+//#Skin: 0,0,1280,656
+//Skin: 0,0,950,487
+   uint found = 0 ;  //  bit 0 = #Skin: found, bit 1 = Skin: found
    while (fgets(inpstr, MAX_LINE_LEN, fd) != NULL) {
       if (_tcsncmp(inpstr, "Skin:", 5) == 0) {
          TCHAR *dimens = _tcsstr(inpstr, _T("0,0,"));
@@ -182,21 +182,46 @@ static int get_skin_dimens(TCHAR *skin_file, bool isRefFile)
          uint height = (uint) atoi(dimens);
          
          //  store results in appropriate fields
-         if (isRefFile) {
-            ref_width = width ;
-            ref_height = height ;
+         target_width = width ;
+         target_height = height ;
+         found |= 2 ;
+      }
+      else
+      if (_tcsncmp(inpstr, "#Skin:", 6) == 0) {
+         TCHAR *dimens = _tcsstr(inpstr, _T("0,0,"));
+         if (dimens == NULL) {
+            printf("bad format: [%s]\n", inpstr);
+            return 1;
          }
-         else {
-            target_width = width ;
-            target_height = height ;
+         
+         dimens += 4 ;  //  skip past zeroes
+         uint width = (uint) atoi(dimens);
+         
+         dimens = _tcschr(dimens, _T(','));
+         if (dimens == NULL) {
+            printf("bad format: [%s]\n", inpstr);
+            return 1;
          }
-         return 0 ;
+         dimens++ ;  //  skip past comma
+         uint height = (uint) atoi(dimens);
+         
+         //  store results in appropriate fields
+         ref_width = width ;
+         ref_height = height ;
+         found |= 1 ;
+      }
+      
+      if (found == 3) {
+         break ;
       }
    }
    fclose(fd);
+   if (found != 3) {
+      printf("missing required label\n");
+      return 1 ;
+   }
    
-   printf("Skin: field not found\n");
-   return 1 ;
+   return 0 ;
 }
 
 //********************************************************************************
@@ -675,40 +700,27 @@ int _tmain(int argc, TCHAR** argv)
    int idx, result ;
    for (idx=1; idx<argc; idx++) {
       TCHAR *p = argv[idx] ;
-      if (idx == 1) {
-         _tcscpy(target_file, p) ;
-      }
-      else if (idx == 2) {
-         _tcscpy(ref_file, p) ;
-      }
-      else {
-         usage();
-         return 1 ;
-      }
+      _tcscpy(target_file, p) ;
    }
    
    //  check args
-   if (target_file[0] == 0  ||  ref_file[0] == 0) {
+   if (target_file[0] == 0) {
       usage() ;
       return 1 ;
    }
    
    sprintf(target_file_lo,  "%s.layout", target_file);
    sprintf(target_file_gif, "%s.gif",    target_file);
-   sprintf(ref_file_lo,     "%s.layout", ref_file);
    
-   // printf("reference file: %s\n", ref_file);
-   printf("reference layout file: %s\n", ref_file_lo);
-   // printf("target file: %s\n", target_file);
-   printf("target layout file:    %s\n", target_file_lo);
-   printf("target gif file:       %s\n", target_file_gif);
+   printf("target layout file: %s\n", target_file_lo);
+   printf("target gif file:    %s\n", target_file_gif);
    
    //  get original dimensions from the reference file
-   result = get_skin_dimens(ref_file_lo, true);
-   if (result != 0) {
-      return result ;
-   }
-   result = get_skin_dimens(target_file_lo, false);
+   // result = get_skin_dimens(ref_file_lo, true);
+   // if (result != 0) {
+   //    return result ;
+   // }
+   result = get_skin_dimens(target_file_lo);
    if (result != 0) {
       return result ;
    }

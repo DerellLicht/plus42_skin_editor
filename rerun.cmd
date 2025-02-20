@@ -1,2 +1,2 @@
 copy stuff\LandscapeRightSmall.layout.orig LandscapeRightSmall.layout
-plus42_skin_editor LandscapeRightSmall LandscapeRight
+plus42_skin_editor LandscapeRightSmall
