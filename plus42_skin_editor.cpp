@@ -45,7 +45,7 @@ static double y_scale = 0.0 ;
 //********************************************************************************
 static void usage(void)
 {
-   puts("Usage: plus42_skin_editor <target_file_name> <ref_file_name");
+   puts("Usage: plus42_skin_editor <target_file_name> <ref_file_name>");
 }
 
 //**********************************************************************
