@@ -9,12 +9,21 @@ existing skins.  Steps for using the program are:
 2. resize the new_name.gif file to the desired new size.
    It is recommended to make width field an even number, to avoid ambiguous results.
 
-3. update new_name.layout Size: field to reflect the new image size.
+3. Update Size field in the .layout file:
+3a. Copy the Size field, and comment out the original Size field
+
+3b. update new Size: field to reflect the new image size.
    NOTE that the Size:Width field is half of the image size, since the GIF is two images wide.
+   
+Example:
+```
+#Skin: 0,0,1280,656
+Skin: 0,0,950,487
+```   
    
 4. run the plus42_skin_editor program; syntax is:
 
-   Usage: plus42_skin_editor <target_file_name> <ref_file_name>
+   Usage: plus42_skin_editor <target_layout_file_name>
    
 5. copy the updated .layout and .gif files to your Plus42 program folder,
    then select the new skin from within the program.
