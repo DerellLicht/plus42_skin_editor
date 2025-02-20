@@ -200,20 +200,41 @@ static int get_skin_dimens(TCHAR *skin_file, bool isRefFile)
 }
 
 //********************************************************************************
+static double fracpart(double inval)
+{
+   unsigned mant = (unsigned) inval ;
+   double frac = inval - (double) mant ;
+   return frac ;
+}
+
+//********************************************************************************
+static unsigned dround(double inval)
+{
+   double frac = fracpart(inval);
+   unsigned uval = (unsigned) inval ;
+   if (frac >= .50) {
+      uval++ ;
+   }
+   return uval ;
+}
+
+//********************************************************************************
 //  these two functions should use round(), rather than ceil()
 //********************************************************************************
 static uint scale_x(uint xnum)
 {
    double xvalue = (double) xnum * x_scale ;
-   xvalue = ceil(xvalue);
-   return (uint) xvalue ;
+   // xvalue = ceil(xvalue);
+   // return (uint) xvalue ;
+   return dround(xvalue) ;
 }
 
 static uint scale_y(uint ynum)
 {
    double yvalue = (double) ynum * y_scale ;
-   yvalue = ceil(yvalue);
-   return (uint) yvalue ;
+   // yvalue = ceil(yvalue);
+   // return (uint) yvalue ;
+   return dround(yvalue) ;
 }
 
 //********************************************************************************
