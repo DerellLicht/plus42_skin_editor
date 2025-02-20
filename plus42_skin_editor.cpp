@@ -1,12 +1,9 @@
 //********************************************************************************
-//  plus42 skin editor - main file
+//  plus42 skin editor
 //  License: Creative Commons CC0 1.0 Universal
 //  Written by: Derell Licht
 //  
-//  build: g++ -Wall -s -O3 -c -Weffc++ plus42_skin_editor.cpp -o plus42_skin_editor.exe
-//  If we want to build with gdiplus (GDI+) library, then we need:
-//  build: c:\tdm32\bin\g++ -Wall -s -O3 -c -Weffc++ -Wno-stringop-truncation plus42_skin_editor.cpp -o plus42_skin_editor.exe
-//  run example: plus42_skin_editor LandscapeRightSmall LandscapeRight
+//  build: g++ -Wall -s -O3 plus42_skin_editor.cpp -o plus42_skin_editor.exe
 //********************************************************************************
 //  The initial version of this editor will assume that the target file
 //  is a resize of some reference file.
