@@ -49,7 +49,7 @@ static void usage(void)
 }
 
 //**********************************************************************
-TCHAR *skip_spaces_and_commas(TCHAR *hd)
+static TCHAR *skip_spaces_and_commas(TCHAR *hd)
 {
    while (*hd == ' '  ||  *hd == ',') {
       hd++ ;

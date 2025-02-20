@@ -2,13 +2,12 @@ SHELL=cmd.exe
 USE_DEBUG = NO
 USE_64BIT = NO
 USE_UNICODE = NO
-USE_GDIPLUS = NO
 
 ifeq ($(USE_64BIT),YES)
 TOOLS=d:\tdm64\bin
 else
 #TOOLS=c:\mingw\bin
-TOOLS=c:\tdm32\bin
+TOOLS=c:\mingw\bin
 endif
 
 ifeq ($(USE_DEBUG),YES)
@@ -18,14 +17,9 @@ else
 CFLAGS = -Wall -s -O3 -c
 LFLAGS = -s -O3
 endif
-CFLAGS += -Weffc++
-CFLAGS += -Wno-write-strings
 ifeq ($(USE_64BIT),YES)
 CFLAGS += -DUSE_64BIT
 endif
-CFLAGS += -Ider_libs
-LiFLAGS += -Ider_libs
-CFLAGS += -Wno-stringop-truncation
 
 # RES=image.rc resource.h
 
@@ -35,10 +29,6 @@ LFLAGS += -dUNICODE -d_UNICODE
 endif
 
 #LIBS=-lmpr -lshlwapi -lole32 -luuid
-ifeq ($(USE_GDIPLUS),YES)
-LIBS=-lgdiplus -lgdi32
-endif
-
 #***************************************************************
 #  After upgrading from g++ 4.3.3 to g++ 4.4.1,
 #  I can now get longlong to printf correctly.
@@ -60,10 +50,6 @@ endif
 #***************************************************************
 
 CPPSRC=plus42_skin_editor.cpp 
-
-ifeq ($(USE_GDIPLUS),YES)
-CPPSRC+=draw_gif_image.cpp
-endif
 
 OBJS = $(CSRC:.c=.o) $(CPPSRC:.cpp=.o)
 
@@ -90,7 +76,7 @@ wc:
 	wc -l *.cpp
 
 lint:
-	cmd /C "c:\lint9\lint-nt +v -width(160,4) $(LiFLAGS) -ic:\lint9 mingw.lnt -os(_lint.tmp) lintdefs.cpp $(CPPSRC)"
+	cmd /C "c:\lint9\lint-nt +v -width(160,4) $(LiFLAGS) -ic:\lint9 mingw.lnt -os(_lint.tmp) $(CPPSRC)"
 
 depend: 
 	makedepend $(CSRC) $(CPPSRC)
