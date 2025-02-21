@@ -97,6 +97,7 @@ AltBkgd: mode src_rect dst_point
   Defines an image to be overlaid on the skin when the given mode is in effect.
   Note that there can be multiple AltBkgd elements for each mode; all of them
   will be drawn when the given mode is in effect.
+  
 AltKey: mode code src_point
   Defines an alternate pressed-key image to be used instead of the default
   pressed-key, when the given mode is in effect, and for the given key code.
